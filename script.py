@@ -21,5 +21,20 @@ first_movie = movie_containers[0]
 first_name = first_movie.h3.a.text
 first_year = first_movie.h3.find('span', class_ = 'lister-item-year text-muted unbold')
 first_year = first_year.text
+first_imdb = float(first_movie.strong.text)
+
+first_mscore = first_movie.find('span', class_ = 'metascore favorable')
+first_mscore = int(first_mscore.text)
+
+#number of votes
+first_votes = first_movie.find('span', attrs = {'name':'nv'})
+first_votes = int (first_votes['data-value'])
+
+
+
+
 print(first_name)
 print(first_year)
+print(first_imdb)
+print(first_mscore)
+print('number of votes:',first_votes) 
