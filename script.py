@@ -1,12 +1,16 @@
 #How to scrape websites with Python and BeautifulSoup
+import pandas as pd
+import requests
 
 from requests import get
 from bs4 import BeautifulSoup
+from time import sleep
+from random import randint
 
 
 url = 'http://www.imdb.com/search/title?release_date=2017&sort=num_votes,desc&page=1'
-
-response = get(url)
+headers = {"Accept-Language": "en-US, en;q=0.5"}
+response = requests.get(url, headers)
 
 
 html_soup = BeautifulSoup(response.text, 'html.parser')
@@ -38,3 +42,46 @@ print(first_year)
 print(first_imdb)
 print(first_mscore)
 print('number of votes:',first_votes) 
+
+# List to store scraped data 
+names = [] 
+years = []
+imdb_rating = []
+metascore = []
+votes = []
+
+# Extract data from individual  movie containers
+
+for container in movie_containers:
+# if the movie has metascore, then extract
+	if container.find('div', class_ = 'ratings-metascore') is not None:
+		#Extract the name
+		name = container.h3.a.text
+		names.append(name)
+		
+		#Extract year
+		year = container.h3.find('span', class_ = 'lister-item-year').text
+		years.append(year)
+		
+		#Extract imdb rating 
+		imdb = float(container.strong.text)
+		imdb_rating.append(imdb)
+		
+		#Extract Metascore 
+		m_score = container.find('span', class_ = 'metascore').text
+		metascore.append(int(m_score))
+		
+		#Extract number of votes
+		vote = container.find('span', attrs = {'name':'nv'})['data-value']
+		votes.append(int(vote))
+		
+test_df = pd.DataFrame({'movie':names,
+						'year':years,'imdb':imdb_rating,'votes':votes,
+						'metascore':metascore})
+print(test_df.info())								
+		
+# Scraping web with lot of pages
+pages = [str(i) for i in range(1,5)]
+years_url = [str(i) for i in range(2000,2018)]	
+
+	
